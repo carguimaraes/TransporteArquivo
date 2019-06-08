@@ -18,7 +18,7 @@ public class Principal {
 		for(ArquivoInfo item:listArquivoInfo) {
 			System.out.println("===>"+item.getNome()+" - "+item.getData());
 		}
-		//arquivo.download();
+		arquivo.download(listArquivoInfo);
 	}
 
 }
