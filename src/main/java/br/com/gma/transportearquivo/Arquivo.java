@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.SocketException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -22,6 +23,8 @@ public class Arquivo {
 	private String userFtp;
 	private String pswFtp;
 	private FTPClient ftpClient;
+	private String pastaSaida;
+	
 
 	public Arquivo() {
 		// TODO pegar arquivo prop
@@ -29,7 +32,36 @@ public class Arquivo {
 		this.portFtp = 21;
 		this.userFtp = "gma";
 		this.pswFtp = "123";
+		this.pastaSaida="/ftp/dados/";
+		
 		this.ftpClient = new FTPClient();
+	}
+
+	public void openConexao() {
+		try {
+			ftpClient.connect(serverFtp, portFtp);
+			ftpClient.login(userFtp, pswFtp);
+			ftpClient.enterLocalPassiveMode();
+			ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+		} catch (SocketException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	public void closeConexao() {
+		try {
+			if (ftpClient.isConnected()) {
+				ftpClient.logout();
+				ftpClient.disconnect();
+			}
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	public List<ArquivoInfo> getListaArquivo() {
@@ -37,11 +69,6 @@ public class Arquivo {
 		List<ArquivoInfo> listArquivoInfo = null;
 
 		try {
-
-			ftpClient.connect(serverFtp, portFtp);
-			ftpClient.login(userFtp, pswFtp);
-			ftpClient.enterLocalPassiveMode();
-			ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
 
 			listArquivoInfo = new ArrayList<>();
 			FTPFile[] files = ftpClient.listFiles();
@@ -56,17 +83,7 @@ public class Arquivo {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} finally {
-			/*
-			try {
-				if (ftpClient.isConnected()) {
-					ftpClient.logout();
-					ftpClient.disconnect();
-				}
-			} catch (IOException ex) {
-				ex.printStackTrace();
-			}
-			*/
+
 		}
 
 		return listArquivoInfo;
@@ -78,48 +95,24 @@ public class Arquivo {
 
 			for (ArquivoInfo item : listArquivoInfo) {
 
-				// APPROACH #1: using retrieveFile(String, OutputStream)
-				String remoteFile =item.getNome();
+				 
+				String remoteFile = item.getNome();
 				String localFile = item.getNome();
-				File downloadFile = new File("E:/ftp/dados/" + localFile);
+				File downloadFile = new File(pastaSaida + localFile);
 				OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(downloadFile));
 				boolean success = ftpClient.retrieveFile(remoteFile, outputStream);
 				outputStream.close();
 
 				if (success) {
-					System.out.println("Sucesso download");
+					System.out.println("Sucesso download: "+item.getNome());
 				}
 
 			}
-
-			/*
-			 * // APPROACH #2: using InputStream retrieveFileStream(String) String
-			 * remoteFile2 = "/test/song.mp3"; File downloadFile2 = new
-			 * File("D:/Downloads/song.mp3"); OutputStream outputStream2 = new
-			 * BufferedOutputStream(new FileOutputStream(downloadFile2)); InputStream
-			 * inputStream = ftpClient.retrieveFileStream(remoteFile2); byte[] bytesArray =
-			 * new byte[4096]; int bytesRead = -1; while ((bytesRead =
-			 * inputStream.read(bytesArray)) != -1) { outputStream2.write(bytesArray, 0,
-			 * bytesRead); }
-			 * 
-			 * success = ftpClient.completePendingCommand(); if (success) {
-			 * System.out.println("File #2 has been downloaded successfully."); }
-			 * 
-			 * outputStream2.close(); inputStream.close();
-			 */
 
 		} catch (IOException ex) {
 			System.out.println("Error: " + ex.getMessage());
 			ex.printStackTrace();
-		} finally {
-			try {
-				if (ftpClient.isConnected()) {
-					ftpClient.logout();
-					ftpClient.disconnect();
-				}
-			} catch (IOException ex) {
-				ex.printStackTrace();
-			}
+
 		}
 
 	}

@@ -13,12 +13,14 @@ public class Principal {
 
 		Arquivo arquivo = new Arquivo();
 		
-		List<ArquivoInfo> listArquivoInfo=	arquivo.getListaArquivo();
+	
+		arquivo.openConexao();
 		
-		for(ArquivoInfo item:listArquivoInfo) {
-			System.out.println("===>"+item.getNome()+" - "+item.getData());
-		}
+		List<ArquivoInfo> listArquivoInfo=	arquivo.getListaArquivo();
+	
 		arquivo.download(listArquivoInfo);
+		
+		arquivo.closeConexao();
 	}
 
 }
