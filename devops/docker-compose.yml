@@ -1,0 +1,13 @@
+version: '3.4'
+
+services:
+  backend:
+    image: transportearquivogma:v1
+    container_name: transportearquivogma
+    volumes:
+     - /home/carguimaraes/workdock/ftp/saidaDados:/ftp/dados
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: tail -F anything
+  
