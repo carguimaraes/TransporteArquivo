@@ -1,0 +1,6 @@
+#https://www.mkyong.com/java/java-cron-job-to-run-a-jar-file/
+
+* * * * * java -jar /app/transportearquivogma-0.0.1.jar 
+
+
+
