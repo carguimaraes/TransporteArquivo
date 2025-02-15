@@ -18,7 +18,8 @@ import org.quartz.impl.StdSchedulerFactory;
 public class Principal {
 
 	public static void main(String[] args) {
-		 
+
+        System.out.println("COLOCADO NO SABADO SO PARA TESTAR O GIT");
 		System.out.println("Inicio: "+Principal.class.getName());
 
 		 SchedulerFactory shedFact = new StdSchedulerFactory();
